@@ -30,11 +30,12 @@ class CategoryViewSet(ModelViewSet):
     "category_name": "Офис и администрирование",
     "type": 2
     """
-    http_method_names = ['get',]
+    http_method_names = ['get', ]
     queryset = Category.objects.select_related('type').all()
     serializer_class = CategorySerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['type']
+
 
 class SubcategoryViewSet(ModelViewSet):
     """
@@ -59,7 +60,7 @@ class SubcategoryViewSet(ModelViewSet):
         "subcategory_name": "Оказание услуги",
         "category": 3
     """
-    http_method_names = ['get',]
+    http_method_names = ['get', ]
     queryset = Subcategory.objects.select_related('category').all()
     serializer_class = SubcategorySerializer
     filter_backends = [DjangoFilterBackend]
