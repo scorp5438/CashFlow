@@ -1,0 +1,309 @@
+{% extends 'dds/base.html' %}
+
+{% block title %}Редактирование операции ДДС{% endblock %}
+
+{% block body %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .form-header h1 {
+        color: #2c3e50;
+        font-weight: 300;
+        margin-bottom: 10px;
+    }
+
+    .form-content {
+        background: white;
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    #cashflowForm {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 14px;
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #3498db;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .form-actions {
+        grid-column: 1 / -1;
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 2px solid #ecf0f1;
+    }
+
+    .btn {
+        padding: 14px 32px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #2980b9, #2471a3);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, #7f8c8d, #6c7b7d);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(149, 165, 166, 0.3);
+    }
+
+    /* Стили для ошибок валидации */
+    .errorlist {
+        color: #e74c3c;
+        margin-top: 5px;
+        font-size: 13px;
+        list-style: none;
+        padding: 0;
+    }
+
+    .errorlist li {
+        background: #fdf2f2;
+        padding: 8px 12px;
+        border-radius: 4px;
+        margin-top: 5px;
+        border-left: 3px solid #e74c3c;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .form-container {
+            margin: 20px auto;
+        }
+
+        .form-content {
+            padding: 25px;
+        }
+
+        #cashflowForm {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="form-container">
+    <div class="form-header">
+        <h1>✏️ Редактирование операции</h1>
+        <p>Внесите необходимые изменения в данные операции</p>
+    </div>
+
+    <div class="form-content">
+        <form method="post" id="cashflowForm">
+            {% csrf_token %}
+
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">
+                    {% if field.name == 'creation_date' %}📅{% endif %}
+                    {% if field.name == 'status' %}🏷️{% endif %}
+                    {% if field.name == 'type' %}🔧{% endif %}
+                    {% if field.name == 'category' %}📂{% endif %}
+                    {% if field.name == 'subcategory' %}📁{% endif %}
+                    {% if field.name == 'amount' %}💰{% endif %}
+                    {% if field.name == 'comment' %}💬{% endif %}
+                    {{ field.label }}
+                </label>
+                {{ field }}
+                {% if field.errors %}
+                    {{ field.errors }}
+                {% endif %}
+                {% if field.help_text %}
+                    <small style="color: #7f8c8d; margin-top: 5px; font-size: 13px;">
+                        💡 {{ field.help_text }}
+                    </small>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    💾 Сохранить изменения
+                </button>
+                <a href="{% url 'dds:index' %}" class="btn btn-secondary">
+                    ← Назад к списку
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const firstInput = document.querySelector('form input, form select, form textarea');
+                if (firstInput) {
+                    firstInput.focus();
+                }
+            });
+
+                        document.addEventListener('DOMContentLoaded', function() {
+            const typeSelect = document.getElementById('id_type');
+            const categorySelect = document.getElementById('id_category');
+            const subcategorySelect = document.getElementById('id_subcategory');
+
+            const selectedCategoryId = categorySelect.value;
+            const selectedSubcategoryId = subcategorySelect.value;
+
+            function loadCategories(typeId) {
+                if (!typeId) {
+                    categorySelect.innerHTML = '<option value="">---------</option>';
+                    subcategorySelect.innerHTML = '<option value="">---------</option>';
+                    return;
+                }
+
+                categorySelect.innerHTML = '<option value="">Загрузка категорий...</option>';
+
+                fetch(`{% url 'api-root:category-list' %}?type=${typeId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        categorySelect.innerHTML = '<option value="">---------</option>';
+
+                        data.forEach(category => {
+                            const option = document.createElement('option');
+                            option.value = category.id;
+                            option.textContent = category.category_name;
+
+                            if (category.id == selectedCategoryId) {
+                                option.selected = true;
+                                loadSubcategories(selectedCategoryId);
+                            }
+
+                            categorySelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Ошибка:', error);
+                        categorySelect.innerHTML = '<option value="">Ошибка загрузки</option>';
+                    });
+            }
+
+            function loadSubcategories(categoryId) {
+                if (!categoryId) {
+                    subcategorySelect.innerHTML = '<option value="">---------</option>';
+                    return;
+                }
+
+                subcategorySelect.innerHTML = '<option value="">Загрузка подкатегорий...</option>';
+
+                fetch(`{% url 'api-root:subcategory-list' %}?category=${categoryId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        subcategorySelect.innerHTML = '<option value="">---------</option>';
+
+                        data.forEach(subcategory => {
+                            const option = document.createElement('option');
+                            option.value = subcategory.id;
+                            option.textContent = subcategory.subcategory_name;
+
+                            if (subcategory.id == selectedSubcategoryId) {
+                                option.selected = true;
+                            }
+
+                            subcategorySelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Ошибка:', error);
+                        subcategorySelect.innerHTML = '<option value="">Ошибка загрузки</option>';
+                    });
+            }
+
+            if (typeSelect) {
+                typeSelect.addEventListener('change', function() {
+                    loadCategories(this.value);
+                });
+
+                if (typeSelect.value) {
+                    loadCategories(typeSelect.value);
+                }
+            }
+
+            if (categorySelect) {
+                categorySelect.addEventListener('change', function() {
+                    loadSubcategories(this.value);
+                });
+
+                if (categorySelect.value && subcategorySelect.options.length <= 1) {
+                    loadSubcategories(categorySelect.value);
+                }
+            }
+        });
+    </script>
+{% endblock %}

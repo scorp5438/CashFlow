@@ -1,0 +1,27 @@
+{% extends 'dds/base_delete.html' %}
+
+{% block title %}Удаление статуса{% endblock %}
+
+{% block delete_title %}Удаление статуса{% endblock %}
+
+{% block delete_message %}
+    Вы уверены, что хотите удалить статус <strong>{{ object.status_name }}</strong>? Это действие нельзя будет отменить.
+{% endblock %}
+
+{% block related_data %}
+    {% if object.status_cash_flows.all %}
+    <div class="related-data">
+        <h3 class="related-title">⚠️ Будут удалены связанные операции:</h3>
+        <div class="related-items">
+            {% for status in object.status_cash_flows.all|slice:":5" %}
+                <div class="related-item">{{ status }}</div>
+            {% endfor %}
+            {% if object.status_cash_flows.all.count > 5 %}
+                <div class="related-item">... и еще {{ object.status_cash_flows.all.count|add:"-5" }}</div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block cancel_url %}{% url 'dds:statuses' %}{% endblock %}

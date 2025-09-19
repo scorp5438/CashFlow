@@ -1,0 +1,13 @@
+{% extends 'dds/base_list.html' %}
+
+{% block title %}Категории{% endblock %}
+
+{% block list_title %}Список категорий{% endblock %}
+{% block create_url %}{% url 'dds:create_category' %}{% endblock %}
+{% block add_button_text %}Добавить категорию{% endblock %}
+
+{% block item_name %}{{ item.category_name }}{% endblock %}
+{% block item_details %}тип: {{ item.type }}{% endblock %}
+
+{% block update_url %}{% url 'dds:update_category' pk=item.pk %}{% endblock %}
+{% block delete_url %}{% url 'dds:delete_category' pk=item.pk %}{% endblock %}

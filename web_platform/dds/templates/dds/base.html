@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>
+        {% block title %}
+            Учет ДДС - Движение Денежных Средств
+        {% endblock %}
+    </title>
+    <style>
+        /* Базовые стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Хедер */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo:hover {
+            color: #ecf0f1;
+        }
+
+        /* Навигация */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        /* Выпадающее меню */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle {
+            background: #27ae60;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-toggle:hover {
+            background: #219a52;
+            transform: translateY(-2px);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background-color: #3498db;
+            color: white;
+        }
+
+        /* Блок пользователя */
+        .user-auth {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: white;
+        }
+
+        .auth-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .auth-link:hover {
+            background-color: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        /* Основной контент */
+        .main-content {
+            flex: 1;
+            padding: 0;
+        }
+
+        /* Футер */
+        .footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                height: auto;
+                padding: 15px 20px;
+                gap: 15px;
+            }
+
+            .nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .user-auth {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .dropdown-menu {
+                right: auto;
+                left: 0;
+            }
+        }
+
+        /* Утилиты */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Хедер -->
+    <header class="header">
+        <div class="header-content">
+            <a href="{% url 'dds:index' %}" class="logo">
+                💰 ДДС Система
+            </a>
+
+            <nav class="nav">
+                <a href="{% url 'dds:index' %}" class="nav-link"> Главная</a>
+                <a href="{% url 'dds:create_dds' %}" class="nav-link">➕ Создать операцию</a>
+
+                <div class="dropdown">
+                    <button class="dropdown-toggle">
+                        📊 Справочники
+                        <span>▼</span>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="{% url 'dds:statuses' %}" class="dropdown-item">🏷️ Статусы</a>
+                        <a href="{% url 'dds:types' %}" class="dropdown-item">🔧 Типы</a>
+                        <a href="{% url 'dds:categories' %}" class="dropdown-item">📂 Категории</a>
+                        <a href="{% url 'dds:subcategories' %}" class="dropdown-item">📁 Подкатегории</a>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="user-auth">
+                {% if not user.is_authenticated %}
+                    <span>🔒 Вы не авторизованы</span>
+                    <a href="{% url 'admin:index' %}" class="auth-link">⚙️ Админ-панель</a>
+                {% else %}
+                    <span>Добро пожаловать, {{ user }}</span>
+                    <a href="{% url 'admin:index' %}" class="auth-link">⚙️ Админ-панель</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main-content">
+        {% block body %}
+            <div style="max-width: 1400px; margin: 40px auto; padding: 0 20px;">
+                <h1 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">
+                    💼 Базовая страница системы ДДС
+                </h1>
+                <p style="text-align: center; color: #7f8c8d; font-size: 18px;">
+                    Выберите действие в меню навигации для работы с системой
+                </p>
+            </div>
+        {% endblock %}
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>💰 Система учета Движения Денежных Средств</p>
+        </div>
+    </footer>
+</body>
+</html>

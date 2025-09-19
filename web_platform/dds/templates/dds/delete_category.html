@@ -1,0 +1,35 @@
+{% extends 'dds/base_delete.html' %}
+
+{% block title %}Удаление категории{% endblock %}
+
+{% block delete_title %}Удаление категории{% endblock %}
+
+{% block delete_message %}
+    Вы уверены, что хотите удалить категорию <strong>{{ object.category_name }}</strong>? Это действие нельзя будет отменить.
+{% endblock %}
+
+{% block related_data %}
+    {% if object.category_cash_flows.all or object.subcategories.all %}
+    <div class="related-data">
+        <h3 class="related-title">⚠️ Будут удалены связанные данные:</h3>
+        <div class="related-items">
+            {% if object.category_cash_flows.all %}
+                <div class="related-item"><strong>Операции:</strong><br>
+                  {% for dds in object.category_cash_flows.all%}
+                    {{ dds }}<br>
+                  {% endfor %}
+                </div>
+            {% endif %}
+            {% if object.subcategories.all %}
+                <div class="related-item"><strong>Подкатегории:</strong><br>
+                {% for subcat in object.subcategories.all %}
+                  {{ subcat }}<br>
+                {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block cancel_url %}{% url 'dds:categories' %}{% endblock %}

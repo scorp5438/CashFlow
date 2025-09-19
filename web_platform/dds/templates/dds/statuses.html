@@ -1,0 +1,12 @@
+{% extends 'dds/base_list.html' %}
+
+{% block title %}Статусы{% endblock %}
+
+{% block list_title %}Список статусов{% endblock %}
+{% block create_url %}{% url 'dds:create_status' %}{% endblock %}
+{% block add_button_text %}Добавить статус{% endblock %}
+
+{% block item_name %}{{ item.status_name }}{% endblock %}
+
+{% block update_url %}{% url 'dds:update_status' pk=item.pk %}{% endblock %}
+{% block delete_url %}{% url 'dds:delete_status' pk=item.pk %}{% endblock %}

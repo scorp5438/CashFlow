@@ -1,0 +1,231 @@
+{% extends 'dds/base.html' %}
+
+{% block title %}
+  {{ view.title }}
+{% endblock %}
+
+{% block body %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .form-header h2 {
+        color: #2c3e50;
+        font-weight: 300;
+        margin-bottom: 10px;
+        font-size: 28px;
+    }
+
+    .form-content {
+        background: white;
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .form-content form {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 14px;
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #3498db;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 2px solid #ecf0f1;
+    }
+
+    .btn {
+        padding: 14px 32px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        min-width: 140px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #2980b9, #2471a3);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, #7f8c8d, #6c7b7d);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(149, 165, 166, 0.3);
+    }
+
+    /* Стили для ошибок валидации */
+    .errorlist {
+        color: #e74c3c;
+        margin-top: 5px;
+        font-size: 13px;
+        list-style: none;
+        padding: 0;
+    }
+
+    .errorlist li {
+        background: #fdf2f2;
+        padding: 8px 12px;
+        border-radius: 4px;
+        margin-top: 5px;
+        border-left: 3px solid #e74c3c;
+    }
+
+    /* Стили для автоматически сгенерированной формы */
+    .form-content p {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
+
+    .form-content p label {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .form-content p input,
+    .form-content p select,
+    .form-content p textarea {
+        padding: 12px;
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+
+    .form-content p input:focus,
+    .form-content p select:focus,
+    .form-content p textarea:focus {
+        outline: none;
+        border-color: #3498db;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+</style>
+
+<div class="form-container">
+    <div class="form-header">
+        <h2>{{ title }}</h2>
+    </div>
+
+    <div class="form-content">
+        <form method="post">
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    💾 {{ view.submit_button }}
+                </button>
+
+                {% if view.back_url %}
+                <a href="{{ back_url }}" class="btn btn-secondary">
+                    ← Назад к списку
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const firstInput = document.querySelector('form input, form select, form textarea');
+        if (firstInput) {
+            firstInput.focus();
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const labels = document.querySelectorAll('label');
+        labels.forEach(label => {
+            const text = label.textContent.toLowerCase();
+            if (text.includes('название') || text.includes('name')) {
+                label.innerHTML = '📝 ' + label.innerHTML;
+            } else if (text.includes('дата')) {
+                label.innerHTML = '📅 ' + label.innerHTML;
+            } else if (text.includes('тип')) {
+                label.innerHTML = '🔧 ' + label.innerHTML;
+            } else if (text.includes('категория')) {
+                label.innerHTML = '📂 ' + label.innerHTML;
+            } else if (text.includes('подкатегория')) {
+                label.innerHTML = '📁 ' + label.innerHTML;
+            } else if (text.includes('статус')) {
+                label.innerHTML = '🏷️ ' + label.innerHTML;
+            }
+        });
+    });
+</script>
+{% endblock %}

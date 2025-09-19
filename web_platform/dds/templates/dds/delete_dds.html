@@ -1,0 +1,176 @@
+{% extends 'dds/base.html' %}
+
+{% block title %}Удаление операции ДДС{% endblock %}
+
+{% block body %}
+<style>
+    .confirmation-container {
+        max-width: 600px;
+        margin: 60px auto;
+        padding: 0 20px;
+    }
+
+    .confirmation-content {
+        background: white;
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    .confirmation-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+        color: #e74c3c;
+    }
+
+    .confirmation-title {
+        color: #2c3e50;
+        font-weight: 300;
+        margin-bottom: 15px;
+        font-size: 28px;
+    }
+
+    .confirmation-message {
+        color: #7f8c8d;
+        font-size: 18px;
+        margin-bottom: 30px;
+        line-height: 1.5;
+    }
+
+    .confirmation-details {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 25px 0;
+        text-align: left;
+    }
+
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #ecf0f1;
+    }
+
+    .detail-item:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .detail-value {
+        color: #7f8c8d;
+    }
+
+    .confirmation-form {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .btn {
+        padding: 14px 32px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        min-width: 140px;
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background: linear-gradient(135deg, #c0392b, #a93226);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(231, 76, 60, 0.3);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, #7f8c8d, #6c7b7d);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(149, 165, 166, 0.3);
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .confirmation-container {
+            margin: 30px auto;
+        }
+
+        .confirmation-content {
+            padding: 25px;
+        }
+
+        .confirmation-form {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="confirmation-container">
+    <div class="confirmation-content">
+        <div class="confirmation-icon">🗑️</div>
+        <h1 class="confirmation-title">Подтверждение удаления</h1>
+
+        <p class="confirmation-message">
+            Вы уверены, что хотите удалить эту операцию? Это действие нельзя будет отменить.
+        </p>
+
+        <!-- Детали операции (опционально) -->
+        <div class="confirmation-details">
+            <div class="detail-item">
+                <span class="detail-label">📅 Дата:</span>
+                <span class="detail-value">{{ object.creation_date|date:"d.m.Y" }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">💰 Сумма:</span>
+                <span class="detail-value">{{ object.amount }} ₽</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">📂 Категория:</span>
+                <span class="detail-value">{{ object.category.category_name }}</span>
+            </div>
+            {% if object.comment %}
+            <div class="detail-item">
+                <span class="detail-label">💬 Комментарий:</span>
+                <span class="detail-value">{{ object.comment }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <form method="POST" class="confirmation-form">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">
+                🗑️ Да, удалить
+            </button>
+            <a href="{% url 'dds:index' %}" class="btn btn-secondary">
+                ← Отмена
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}

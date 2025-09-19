@@ -1,0 +1,42 @@
+{% extends 'dds/base_delete.html' %}
+
+{% block title %}Удаление типа{% endblock %}
+
+{% block delete_title %}Удаление типа{% endblock %}
+
+{% block delete_message %}
+    Вы уверены, что хотите удалить тип <strong>{{ object.type_name }}</strong>? Это действие нельзя будет отменить.
+{% endblock %}
+
+{% block related_data %}
+    {% if object.type_cash_flows.all or object.categories.all or all_subcategories %}
+    <div class="related-data">
+        <h3 class="related-title">⚠️ Будут удалены связанные данные:</h3>
+        <div class="related-items">
+            {% if object.type_cash_flows.all %}
+                <div class="related-item"><strong>Операции:</strong><br>
+                  {% for dds in object.type_cash_flows.all %}
+                      {{ dds }}<br>
+                  {% endfor %}
+                </div>
+            {% endif %}
+            {% if object.categories.all %}
+                <div class="related-item"><strong>Категории:</strong><br>
+                {% for category in object.categories.all %}
+                  {{ category }}<br>
+                {% endfor %}
+                </div>
+            {% endif %}
+            {% if all_subcategories %}
+                <div class="related-item"><strong>Подкатегории:</strong><br>
+                  {% for subcat in  all_subcategories%}
+                    {{ subcat }}<br>
+                  {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block cancel_url %}{% url 'dds:types' %}{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'dds/base_delete.html' %}
+
+{% block title %}Удаление подкатегории{% endblock %}
+
+{% block delete_title %}Удаление подкатегории{% endblock %}
+
+{% block delete_message %}
+    Вы уверены, что хотите удалить подкатегорию <strong>{{ object.subcategory_name }}</strong>? Это действие нельзя будет отменить.
+{% endblock %}
+
+{% block related_data %}
+    {% if object.subcategory_cash_flows.all %}
+    <div class="related-data">
+        <h3 class="related-title">⚠️ Будут удалены связанные операции:</h3>
+        <div class="related-items">
+            {% for dds in object.subcategory_cash_flows.all|slice:":5" %}
+                <div class="related-item">{{ dds }}</div>
+            {% endfor %}
+            {% if object.subcategory_cash_flows.all.count > 5 %}
+                <div class="related-item">... и еще {{ object.subcategory_cash_flows.all.count|add:"-5" }}</div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block cancel_url %}{% url 'dds:subcategories' %}{% endblock %}

@@ -1,0 +1,175 @@
+{% extends 'dds/base.html' %}
+
+{% block body %}
+<style>
+    .list-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #ecf0f1;
+    }
+
+    .list-title {
+        color: #2c3e50;
+        font-weight: 300;
+        margin: 0;
+    }
+
+    .add-btn {
+        background: linear-gradient(135deg, #27ae60, #219a52);
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .add-btn:hover {
+        background: linear-gradient(135deg, #219a52, #1e8449);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3);
+    }
+
+    .items-list {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid #ecf0f1;
+        transition: all 0.3s ease;
+    }
+
+    .list-item:last-child {
+        border-bottom: none;
+    }
+
+    .list-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .item-content {
+        flex: 1;
+    }
+
+    .item-name {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+
+    .item-details {
+        color: #7f8c8d;
+        font-size: 14px;
+    }
+
+    .item-actions {
+        display: flex;
+        gap: 15px;
+    }
+
+    .action-link {
+        color: #3498db;
+        text-decoration: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .action-link.update {
+        background-color: #ebf5fb;
+    }
+
+    .action-link.update:hover {
+        background-color: #3498db;
+        color: white;
+    }
+
+    .action-link.delete {
+        color: #e74c3c;
+        background-color: #fdf2f2;
+    }
+
+    .action-link.delete:hover {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+    .empty-message {
+        text-align: center;
+        padding: 60px 20px;
+        color: #7f8c8d;
+        font-style: italic;
+        font-size: 18px;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .list-header {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+
+        .list-item {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+
+        .item-actions {
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="list-container">
+    <div class="list-header">
+        <h1 class="list-title">{% block list_title %}Список{% endblock %}</h1>
+        <a href="{% block create_url %}#{% endblock %}" class="add-btn">
+            ➕ {% block add_button_text %}Добавить{% endblock %}
+        </a>
+    </div>
+
+    <div class="items-list">
+        {% if object_list %}
+            {% for item in object_list %}
+                <div class="list-item">
+                    <div class="item-content">
+                        <div class="item-name">{% block item_name %}{{ item }}{% endblock %}</div>
+                        <div class="item-details">{% block item_details %}{% endblock %}</div>
+                    </div>
+                    <div class="item-actions">
+                        <a href="{% block update_url %}#{% endblock %}" class="action-link update">✏️ Обновить</a>
+                        <a href="{% block delete_url %}#{% endblock %}" class="action-link delete">🗑️ Удалить</a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-message">
+                📝 Данных еще нет...
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
