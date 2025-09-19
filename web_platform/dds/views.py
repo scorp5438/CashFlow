@@ -29,10 +29,59 @@ from .models import (
 
 
 class IndexView(ListView):
+    """
+    Представление для отображения главной страницы системы учета ДДС.
+
+    Обеспечивает:
+    - Отображение списка денежных операций с пагинацией
+    - Фильтрацию операций по различным параметрам
+    - Передачу в контекст справочников для фильтров
+
+    Атрибуты:
+        template_name (str): Путь к шаблону страницы
+        paginate_by (int): Количество операций на странице
+
+    Методы:
+        get_queryset(): Возвращает отфильтрованный queryset операций
+        get_context_data(): Добавляет в контекст данные для фильтров и формы
+
+    Фильтрация поддерживается по:
+        - Диапазону дат (date_from, date_to)
+        - Статусу операции (status)
+        - Типу операции (type_obj)
+        - Категории (category)
+        - Подкатегории (subcategory)
+
+    Пример использования в URL:
+        /?date_from=2024-01-01&date_to=2024-12-31&status=1&type_obj=2
+
+    Возвращает:
+        QuerySet: Отсортированный по дате (новые сначала) список операций
+        с предзагруженными связанными объектами для оптимизации запросов.
+    """
     template_name = 'dds/index.html'
     paginate_by = 5
 
     def get_queryset(self):
+        """
+        Формирует и возвращает отфильтрованный queryset денежных операций.
+
+        Обрабатывает GET-параметры фильтрации:
+            - date_from: начальная дата (включительно)
+            - date_to: конечная дата (включительно)
+            - status: ID статуса операции
+            - type_obj: ID типа операции
+            - category: ID категории
+            - subcategory: ID подкатегории
+
+        Returns:
+            QuerySet: Отфильтрованный и отсортированный queryset операций CashFlow
+                     с предзагрузкой связанных объектов для избежания N+1 проблемы.
+
+        Note:
+            Использует select_related для оптимизации запросов к связанным моделям.
+            Фильтрация по ID выполняется только для цифровых значений.
+        """
         date_from = self.request.GET.get('date_from')
         date_to = self.request.GET.get('date_to')
         status = self.request.GET.get('status')
@@ -40,6 +89,7 @@ class IndexView(ListView):
         category = self.request.GET.get('category')
         subcategory = self.request.GET.get('subcategory')
 
+        # Базовый queryset с оптимизацией запросов
         queryset = CashFlow.objects.select_related(
             'status',
             'type',
@@ -69,13 +119,35 @@ class IndexView(ListView):
 
 
     def get_context_data(self, *, object_list=None, **kwargs):
+        """
+        Расширяет контекст шаблона дополнительными данными.
+
+        Добавляет в контекст:
+            - Все справочники для заполнения фильтров
+            - Текущие значения фильтров для сохранения состояния формы
+
+        Args:
+            object_list: Список объектов для отображения
+            **kwargs: Дополнительные аргументы контекста
+
+        Returns:
+            dict: Контекст с данными для шаблона, включая:
+                - object_list: Список операций
+                - statuses: Все статусы операций
+                - types: Все типы операций
+                - categories: Все категории
+                - subcategories: Все подкатегории
+                - current_*: Текущие значения фильтров
+        """
         context = super().get_context_data(**kwargs)
 
+        # Справочники для фильтров
         context['statuses'] = Status.objects.all()
         context['types'] = Type.objects.all()
         context['categories'] = Category.objects.all()
         context['subcategories'] = Subcategory.objects.all()
 
+        # Текущие значения фильтров для сохранения состояния формы
         context['current_date_from'] = self.request.GET.get('date_from', '')
         context['current_date_to'] = self.request.GET.get('date_to', '')
         context['current_status'] = self.request.GET.get('status', '')
@@ -86,6 +158,12 @@ class IndexView(ListView):
 
 
 class CreateDdsView(CreateView):
+    """
+    Представление для создания новой денежной операции.
+
+    Обеспечивает отображение формы создания и обработку данных операции.
+    После успешного создания перенаправляет на главную страницу.
+    """
     model = CashFlow
     template_name = 'dds/create_dds.html'
     form_class = CreateCashFlowForm
@@ -93,6 +171,12 @@ class CreateDdsView(CreateView):
 
 
 class UpdateDdsView(UpdateView):
+    """
+    Представление для редактирования существующей денежной операции.
+
+    Обеспечивает отображение формы редактирования и обновление данных операции.
+    После успешного обновления перенаправляет на главную страницу.
+    """
     model = CashFlow
     template_name = 'dds/update_dds.html'
     form_class = UpdateCashFlowForm
@@ -100,18 +184,50 @@ class UpdateDdsView(UpdateView):
 
 
 class DeleteDdsView(DeleteView):
+    """
+    Представление для удаления денежной операции.
+
+    Обеспечивает подтверждение удаления и удаление операции из системы.
+    После успешного удаления перенаправляет на главную страницу.
+    """
     model = CashFlow
     template_name = 'dds/delete_dds.html'
     success_url = reverse_lazy('dds:index')
 
 
 class BaseCreateView(CreateView):
+    """
+    Базовое представление для создания записей справочников.
+
+    Наследуется от Django CreateView и предоставляет общую конфигурацию
+    для всех форм создания справочных данных (статусов, типов, категорий и т.д.).
+
+    Атрибуты:
+        template_name: Общий шаблон для всех форм создания
+        submit_button: Текст кнопки отправки формы
+        back_url: URL для кнопки "Назад"
+        title: Заголовок страницы
+
+    Методы:
+        get_context_data: Добавляет в контекст дополнительные данные для шаблона
+    """
     template_name = 'dds/base_form.html'
     submit_button = 'Добавить'
     back_url = None
     title = None
 
     def get_context_data(self, **kwargs):
+        """
+        Расширяет контекст шаблона дополнительными данными.
+
+        Добавляет:
+            - title: Заголовок страницы
+            - submit_button: Текст кнопки отправки
+            - back_url: URL для кнопки "Назад"
+
+        Returns:
+            dict: Расширенный контекст для рендеринга шаблона
+        """
         context = super().get_context_data(**kwargs)
         context['title'] = self.title
         context['submit_button'] = self.submit_button
@@ -120,12 +236,38 @@ class BaseCreateView(CreateView):
 
 
 class BaseUpdateView(UpdateView):
+    """
+    Базовое представление для редактирования записей справочников.
+
+    Наследуется от Django UpdateView и предоставляет общую конфигурацию
+    для всех форм редактирования справочных данных.
+
+    Атрибуты:
+        template_name: Общий шаблон для всех форм редактирования
+        submit_button: Текст кнопки сохранения изменений
+        back_url: URL для кнопки "Назад"
+        title: Заголовок страницы
+
+    Методы:
+        get_context_data: Добавляет в контекст дополнительные данные для шаблона
+    """
     template_name = 'dds/base_form.html'
     submit_button = 'Сохранить'
     back_url = None
     title = None
 
     def get_context_data(self, **kwargs):
+        """
+        Расширяет контекст шаблона дополнительными данными.
+
+        Добавляет:
+            - title: Заголовок страницы
+            - submit_button: Текст кнопки сохранения
+            - back_url: URL для кнопки "Назад"
+
+        Returns:
+            dict: Расширенный контекст для рендеринга шаблона
+        """
         context = super().get_context_data(**kwargs)
         context['title'] = self.title
         context['submit_button'] = self.submit_button
@@ -134,11 +276,18 @@ class BaseUpdateView(UpdateView):
 
 
 class StatusesView(ListView):
+    """
+    Представление для отображения списка всех статусов операций.
+    """
     template_name = 'dds/statuses.html'
     queryset = Status.objects.all()
 
 
 class CreateStatusView(BaseCreateView):
+    """
+    Представление для создания нового статуса операции.
+    Наследует базовую конфигурацию формы создания.
+    """
     model = Status
     form_class = CreateStatusForm
     success_url = reverse_lazy('dds:statuses')
@@ -147,6 +296,10 @@ class CreateStatusView(BaseCreateView):
 
 
 class UpdateStatusView(BaseUpdateView):
+    """
+    Представление для редактирования существующего статуса операции.
+    Наследует базовую конфигурацию формы редактирования.
+    """
     model = Status
     form_class = UpdateStatusForm
     success_url = reverse_lazy('dds:statuses')
@@ -155,6 +308,10 @@ class UpdateStatusView(BaseUpdateView):
 
 
 class DeleteStatusView(DeleteView):
+    """
+    Представление для удаления статуса операции.
+    Включает предзагрузку связанных операций для отображения предупреждения.
+    """
     model = Status
     template_name = 'dds/delete_status.html'
     success_url = reverse_lazy('dds:statuses')
@@ -162,11 +319,18 @@ class DeleteStatusView(DeleteView):
 
 
 class TypesView(ListView):
+    """
+    Представление для отображения списка всех типов операций.
+    """
     template_name = 'dds/types.html'
     queryset = Type.objects.all()
 
 
 class CreateTypeView(BaseCreateView):
+    """
+    Представление для создания нового типа операции.
+    Наследует базовую конфигурацию формы создания.
+    """
     model = Type
     form_class = CreateTypeForm
     success_url = reverse_lazy('dds:types')
@@ -175,6 +339,10 @@ class CreateTypeView(BaseCreateView):
 
 
 class UpdateTypeView(BaseUpdateView):
+    """
+    Представление для редактирования существующего типа операции.
+    Наследует базовую конфигурацию формы редактирования.
+    """
     model = Type
     form_class = UpdateTypeForm
     success_url = reverse_lazy('dds:types')
@@ -183,12 +351,20 @@ class UpdateTypeView(BaseUpdateView):
 
 
 class DeleteTypeView(DeleteView):
+    """
+    Представление для удаления типа операции.
+    Включает предзагрузку связанных категорий, подкатегорий и операций
+    для отображения предупреждения о связанных данных.
+    """
     model = Type
     template_name = 'dds/delete_type.html'
     success_url = reverse_lazy('dds:types')
     queryset = Type.objects.prefetch_related('categories__subcategories', 'type_cash_flows').all()
 
     def get_context_data(self, **kwargs):
+        """
+        Расширяет контекст списком всех подкатегорий, связанных с типом.
+        """
         context = super().get_context_data(**kwargs)
 
         all_subcategories = []
@@ -198,11 +374,19 @@ class DeleteTypeView(DeleteView):
         return context
 
 class CategoriesView(ListView):
+    """
+    Представление для отображения списка всех категорий операций.
+    Включает предзагрузку связанных типов для оптимизации запросов.
+    """
     template_name = 'dds/categories.html'
     queryset = Category.objects.select_related('type').all()
 
 
 class CreateCategoryView(BaseCreateView):
+    """
+    Представление для создания новой категории операции.
+    Наследует базовую конфигурацию формы создания.
+    """
     model = Category
     form_class = CreateCategoryForm
     success_url = reverse_lazy('dds:categories')
@@ -211,6 +395,10 @@ class CreateCategoryView(BaseCreateView):
 
 
 class UpdateCategoryView(BaseUpdateView):
+    """
+    Представление для редактирования существующей категории операции.
+    Наследует базовую конфигурацию формы редактирования.
+    """
     model = Category
     form_class = UpdateCategoryForm
     success_url = reverse_lazy('dds:categories')
@@ -219,19 +407,30 @@ class UpdateCategoryView(BaseUpdateView):
 
 
 class DeleteCategoryView(DeleteView):
+    """
+    Представление для удаления категории операции.
+    Включает предзагрузку связанных операций и подкатегорий
+    для отображения предупреждения о связанных данных.
+    """
     model = Category
     template_name = 'dds/delete_category.html'
     success_url = reverse_lazy('dds:categories')
     queryset = Category.objects.prefetch_related('category_cash_flows', 'subcategories').all()
 
 class SubcategoriesView(ListView):
+    """
+    Представление для отображения списка всех подкатегорий операций.
+    Включает предзагрузку связанных категорий и их типов для оптимизации запросов.
+    """
     template_name = 'dds/subcategories.html'
     queryset = Subcategory.objects.select_related('category__type').all()
-    back_url = reverse_lazy('dds:index')
-    title = 'Список подкатегорий'
 
 
 class CreateSubcategoryView(BaseCreateView):
+    """
+    Представление для создания новой подкатегории операции.
+    Наследует базовую конфигурацию формы создания.
+    """
     model = Subcategory
     form_class = CreateSubcategoryForm
     success_url = reverse_lazy('dds:subcategories')
@@ -240,6 +439,10 @@ class CreateSubcategoryView(BaseCreateView):
 
 
 class UpdateSubcategoryView(BaseUpdateView):
+    """
+    Представление для редактирования существующей подкатегории операции.
+    Наследует базовую конфигурацию формы редактирования.
+    """
     model = Subcategory
     form_class = UpdateSubcategoryForm
     success_url = reverse_lazy('dds:subcategories')
@@ -248,6 +451,10 @@ class UpdateSubcategoryView(BaseUpdateView):
 
 
 class DeleteSubcategoryView(DeleteView):
+    """
+    Представление для удаления подкатегории операции.
+    Включает предзагрузку связанных операций для отображения предупреждения.
+    """
     model = Subcategory
     template_name = 'dds/delete_subcategory.html'
     success_url = reverse_lazy('dds:subcategories')

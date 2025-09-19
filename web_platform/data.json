@@ -838,9 +838,9 @@
 },
 {
     "model": "dds.status",
-    "pk": 7,
+    "pk": 8,
     "fields": {
-        "status_name": "Tестовый Статус"
+        "status_name": "Тестовый статус"
     }
 },
 {
@@ -859,7 +859,7 @@
 },
 {
     "model": "dds.type",
-    "pk": 3,
+    "pk": 4,
     "fields": {
         "type_name": "Тестовый тип"
     }
@@ -898,9 +898,9 @@
 },
 {
     "model": "dds.category",
-    "pk": 5,
+    "pk": 6,
     "fields": {
-        "type": 3,
+        "type": 4,
         "category_name": "Тестовая категория"
     }
 },
@@ -970,18 +970,18 @@
 },
 {
     "model": "dds.subcategory",
-    "pk": 10,
-    "fields": {
-        "category": 5,
-        "subcategory_name": "Тестовая подкатегория"
-    }
-},
-{
-    "model": "dds.subcategory",
     "pk": 11,
     "fields": {
         "category": 3,
         "subcategory_name": "Оказание услуги"
+    }
+},
+{
+    "model": "dds.subcategory",
+    "pk": 13,
+    "fields": {
+        "category": 6,
+        "subcategory_name": "Тестовая подкатегория"
     }
 },
 {
@@ -1051,19 +1051,6 @@
 },
 {
     "model": "dds.cashflow",
-    "pk": 33,
-    "fields": {
-        "creation_date": "2025-09-18",
-        "status": 4,
-        "type": 3,
-        "category": 5,
-        "subcategory": 10,
-        "amount": "500.55",
-        "comment": "ТЕСТ"
-    }
-},
-{
-    "model": "dds.cashflow",
     "pk": 34,
     "fields": {
         "creation_date": "2025-09-18",
@@ -1125,6 +1112,32 @@
         "subcategory": 2,
         "amount": "1855.00",
         "comment": null
+    }
+},
+{
+    "model": "dds.cashflow",
+    "pk": 42,
+    "fields": {
+        "creation_date": "2025-09-18",
+        "status": 8,
+        "type": 2,
+        "category": 2,
+        "subcategory": 4,
+        "amount": "900.00",
+        "comment": "TEST"
+    }
+},
+{
+    "model": "dds.cashflow",
+    "pk": 44,
+    "fields": {
+        "creation_date": "2025-09-19",
+        "status": 8,
+        "type": 4,
+        "category": 6,
+        "subcategory": 13,
+        "amount": "0.05",
+        "comment": "Тест"
     }
 }
 ]
