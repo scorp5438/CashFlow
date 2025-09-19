@@ -89,7 +89,6 @@ class IndexView(ListView):
         category = self.request.GET.get('category')
         subcategory = self.request.GET.get('subcategory')
 
-        # Базовый queryset с оптимизацией запросов
         queryset = CashFlow.objects.select_related(
             'status',
             'type',

@@ -212,7 +212,6 @@
             const categorySelect = document.getElementById('id_category');
             const subcategorySelect = document.getElementById('id_subcategory');
 
-            // Сохраняем выбранные значения ДО загрузки
             const selectedCategoryId = categorySelect ? categorySelect.value : null;
             const selectedSubcategoryId = subcategorySelect ? subcategorySelect.value : null;
 
@@ -225,7 +224,6 @@
                     return;
                 }
 
-                // Сохраняем текущее выбранное значение
                 const currentSelection = preserveSelection ? categorySelect.value : null;
 
                 categorySelect.innerHTML = '<option value="">Загрузка категорий...</option>';
@@ -243,7 +241,6 @@
                             categorySelect.appendChild(option);
                         });
 
-                        // Если сохраняем выбор - запускаем загрузку подкатегорий
                         if (preserveSelection && currentSelection) {
                             loadSubcategories(currentSelection, true);
                         }
@@ -262,7 +259,6 @@
                     return;
                 }
 
-                // Сохраняем текущее выбранное значение
                 const currentSelection = preserveSelection ? subcategorySelect.value : null;
 
                 subcategorySelect.innerHTML = '<option value="">Загрузка подкатегорий...</option>';
@@ -286,13 +282,11 @@
                     });
             }
 
-            // Обработчики изменений
             if (typeSelect) {
                 typeSelect.addEventListener('change', function() {
-                    loadCategories(this.value, false); // Не сохранять выбор при ручном изменении
+                    loadCategories(this.value, false);
                 });
 
-                // При загрузке страницы - загружаем категории с сохранением выбора
                 if (typeSelect.value) {
                     loadCategories(typeSelect.value, true);
                 }
@@ -303,7 +297,6 @@
                     loadSubcategories(this.value, false);
                 });
 
-                // При загрузке страницы - загружаем подкатегории с сохранением выбора
                 if (categorySelect.value) {
                     loadSubcategories(categorySelect.value, true);
                 }

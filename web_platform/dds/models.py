@@ -128,6 +128,5 @@ class CashFlow(models.Model):
         verbose_name = 'Движение денежных средств'
         verbose_name_plural = 'Движение денежных средств'
 
-
     def __str__(self):
         return f'Операция: {self.type} на сумму: {self.amount} от {self.creation_date}'

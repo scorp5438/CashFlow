@@ -1,7 +1,11 @@
 from django.contrib import admin
-from django.core.exceptions import ValidationError
-from django.contrib import messages
-from .models import Status, Type, Category, Subcategory, CashFlow
+
+from .models import (
+    Status,
+    Type,
+    Category,
+    Subcategory
+)
 
 
 @admin.register(Status)
@@ -21,7 +25,8 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = 'pk', 'category_name'
     list_display_links = 'pk', 'category_name',
 
+
 @admin.register(Subcategory)
 class SubcategoryAdmin(admin.ModelAdmin):
-    list_display = 'pk', 'category','subcategory_name'
-    list_display_links = 'pk', 'category','subcategory_name'
+    list_display = 'pk', 'category', 'subcategory_name'
+    list_display_links = 'pk', 'category', 'subcategory_name'
